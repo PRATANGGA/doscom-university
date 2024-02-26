@@ -19,7 +19,10 @@ class ProductData with ChangeNotifier {
         var responseData = json.decode(response.body)['data'];
         print(responseData);
         for (var item in responseData) {
+          // print(item);
+          // print(_allData);
           _allData.add(TourismPlace.fromJson(item));
+          // print("data baru: $_allData");
         }
         notifyListeners();
       } else {
