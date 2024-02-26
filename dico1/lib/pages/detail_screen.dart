@@ -1,6 +1,8 @@
+import 'package:dico1/provider/product_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dico1/model/tourism_place.dart';
+import 'package:provider/provider.dart';
 
 var informationTextStyle = const TextStyle(fontFamily: 'Oxygen');
 
@@ -56,7 +58,20 @@ class DetailMobilePage extends StatelessWidget {
                             },
                           ),
                         ),
-                        const FavoriteButton(),
+                        Consumer<ProductData>(
+                          builder: (context, productData, child) => IconButton(
+                            icon: Icon(
+                              place.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              productData.toggleFavorite(place.id);
+                            },
+                          ),
+                        ),
+                        // const FavoriteButton(),
                       ],
                     ),
                   ),
@@ -246,7 +261,22 @@ class _DetailWebPageState extends State<DetailWebPage> {
                                       ),
                                     ],
                                   ),
-                                  const FavoriteButton(),
+                                  Consumer<ProductData>(
+                                    builder: (context, productData, child) =>
+                                        IconButton(
+                                      icon: Icon(
+                                        widget.place.isFavorite
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        productData
+                                            .toggleFavorite(widget.place.id);
+                                      },
+                                    ),
+                                  ),
+                                  // const FavoriteButton(),
                                 ],
                               ),
                               Row(
@@ -271,7 +301,8 @@ class _DetailWebPageState extends State<DetailWebPage> {
                                 ],
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16.0),
                                 child: Text(
                                   widget.place.description,
                                   textAlign: TextAlign.justify,

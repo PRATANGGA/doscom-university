@@ -62,14 +62,18 @@ class TourismPlaceGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allData = Provider.of<ProductData>(context).allData;
+    final webData = Provider.of<ProductData>(context);
+    print("DATA PADA WEB INI $webData");
     return Padding(
       padding: const EdgeInsets.all(24.0),
-      child: GridView.count(
-        crossAxisCount: gridCount,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        children: allData.map((place) {
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: gridCount,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16),
+        itemCount: webData.allData.length,
+        itemBuilder: (context, index) {
+          TourismPlace place = webData.allData[index];
           return InkWell(
             onTap: () {
               Navigator.push(
@@ -109,7 +113,7 @@ class TourismPlaceGrid extends StatelessWidget {
               ),
             ),
           );
-        }).toList(),
+        },
       ),
     );
   }

@@ -33,4 +33,12 @@ class ProductData with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void toggleFavorite(int id) {
+    final index = _allData.indexWhere((place) => place.id == id);
+    if (index != -1) {
+      _allData[index].isFavorite = !_allData[index].isFavorite;
+      notifyListeners();
+    }
+  }
 }

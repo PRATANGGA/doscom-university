@@ -12,6 +12,7 @@ class TourismPlace {
   List<String> imageUrls;
   String createdAt;
   String updatedAt;
+  bool isFavorite;
 
   TourismPlace({
     required this.id,
@@ -25,6 +26,7 @@ class TourismPlace {
     required this.imageUrls,
     required this.createdAt,
     required this.updatedAt,
+    this.isFavorite = false,
   });
 
   factory TourismPlace.fromJson(Map<String, dynamic> json) {
