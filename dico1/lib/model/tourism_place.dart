@@ -13,7 +13,7 @@ class TourismPlace {
   String createdAt;
   String updatedAt;
   bool isFavorite;
-
+  List<Map<String, String>> comments;
   TourismPlace({
     required this.id,
     required this.name,
@@ -27,7 +27,8 @@ class TourismPlace {
     required this.createdAt,
     required this.updatedAt,
     this.isFavorite = false,
-  });
+    List<Map<String, String>>? comments,
+  }) : comments = comments ?? [];
 
   factory TourismPlace.fromJson(Map<String, dynamic> json) {
     return TourismPlace(
@@ -44,4 +45,20 @@ class TourismPlace {
       updatedAt: json['updated_at'],
     );
   }
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'name': name,
+//       'location': location,
+//       'description': description,
+//       'open_days': openDays,
+//       'open_time': openTime,
+//       'ticket_price': ticketPrice,
+//       'image_asset': imageAsset,
+//       'image_urls': jsonEncode(imageUrls),
+//       'created_at': createdAt,
+//       'updated_at': updatedAt,
+//       'is_favorite': isFavorite,
+//     };
+// }
 }

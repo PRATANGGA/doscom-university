@@ -1,4 +1,4 @@
-import 'package:dico1/provider/product_data.dart';
+import 'package:dico1/provider/product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:dico1/pages/detail_screen.dart';
 import 'package:dico1/model/tourism_place.dart';
@@ -17,7 +17,8 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _futureData = Provider.of<ProductData>(context, listen: false).fetchData();
+    _futureData =
+        Provider.of<ProductProvider>(context, listen: false).fetchData();
   }
 
   @override
@@ -62,7 +63,7 @@ class TourismPlaceGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final webData = Provider.of<ProductData>(context);
+    final webData = Provider.of<ProductProvider>(context);
     print("DATA PADA WEB INI $webData");
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -124,7 +125,7 @@ class TourismPlaceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allData = Provider.of<ProductData>(context);
+    final allData = Provider.of<ProductProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView.builder(

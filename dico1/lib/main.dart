@@ -1,4 +1,4 @@
-import 'package:dico1/provider/product_data.dart';
+import 'package:dico1/provider/product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:dico1/pages/main_screen.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ProductData(),
+      create: (context) => ProductProvider(),
       child: MaterialApp(
         title: 'Wisata Bandung',
         theme: ThemeData(),

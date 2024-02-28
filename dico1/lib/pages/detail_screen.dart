@@ -1,4 +1,6 @@
-import 'package:dico1/provider/product_data.dart';
+import 'dart:math';
+
+import 'package:dico1/provider/product_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dico1/model/tourism_place.dart';
@@ -25,13 +27,116 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-class DetailMobilePage extends StatelessWidget {
+class DetailMobilePage extends StatefulWidget {
   final TourismPlace place;
 
-  const DetailMobilePage({Key? key, required this.place}) : super(key: key);
+  DetailMobilePage({Key? key, required this.place}) : super(key: key);
+
+  @override
+  State<DetailMobilePage> createState() => _DetailMobilePageState();
+}
+
+class _DetailMobilePageState extends State<DetailMobilePage> {
+  List _comments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchComments();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    updateComments();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  void fetchComments() async {
+    try {
+      await Provider.of<ProductProvider>(context, listen: false)
+          .getComment(widget.place.id);
+      setState(() {
+        _comments =
+            Provider.of<ProductProvider>(context, listen: false).allComment;
+      });
+    } catch (error) {
+      print("Error fetching comments: $error");
+    }
+  }
+
+  void updateComments() {
+    setState(() {
+      _comments =
+          Provider.of<ProductProvider>(context, listen: false).allComment;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController comment = TextEditingController();
+
+    void showCommentModal(BuildContext context, int id) {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            padding: EdgeInsets.only(top: 10.0),
+            // Add return statement here
+            height: MediaQuery.of(context).size.height / 0.85,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Center(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(right: 5, left: 5),
+                        width: MediaQuery.of(context).size.width - 50,
+                        // width: 100,
+                        height: 60,
+                        child: TextFormField(
+                          controller: comment,
+                          scrollPadding: EdgeInsets.symmetric(vertical: 20),
+                          decoration: InputDecoration(
+                            hintText: "Enter your comment",
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          String randomName = 'User${Random().nextInt(100)}';
+                          Provider.of<ProductProvider>(context, listen: false)
+                              .addComment(id, randomName, comment.text);
+                          updateComments();
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.send),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -39,7 +144,7 @@ class DetailMobilePage extends StatelessWidget {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                Image.asset(place.imageAsset),
+                Image.asset(widget.place.imageAsset),
                 SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -58,16 +163,16 @@ class DetailMobilePage extends StatelessWidget {
                             },
                           ),
                         ),
-                        Consumer<ProductData>(
+                        Consumer<ProductProvider>(
                           builder: (context, productData, child) => IconButton(
                             icon: Icon(
-                              place.isFavorite
+                              widget.place.isFavorite
                                   ? Icons.favorite
                                   : Icons.favorite_border,
                               color: Colors.red,
                             ),
                             onPressed: () {
-                              productData.toggleFavorite(place.id);
+                              productData.toggleFavorite(widget.place.id);
                             },
                           ),
                         ),
@@ -81,7 +186,7 @@ class DetailMobilePage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(top: 16.0),
               child: Text(
-                place.name,
+                widget.place.name,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 30.0,
@@ -99,7 +204,7 @@ class DetailMobilePage extends StatelessWidget {
                       const Icon(Icons.calendar_today),
                       const SizedBox(height: 8.0),
                       Text(
-                        place.openDays,
+                        widget.place.openDays,
                         style: informationTextStyle,
                       ),
                     ],
@@ -109,7 +214,7 @@ class DetailMobilePage extends StatelessWidget {
                       const Icon(Icons.access_time),
                       const SizedBox(height: 8.0),
                       Text(
-                        place.openTime,
+                        widget.place.openTime,
                         style: informationTextStyle,
                       ),
                     ],
@@ -119,7 +224,7 @@ class DetailMobilePage extends StatelessWidget {
                       const Icon(Icons.monetization_on),
                       const SizedBox(height: 8.0),
                       Text(
-                        place.ticketPrice,
+                        widget.place.ticketPrice,
                         style: informationTextStyle,
                       ),
                     ],
@@ -130,7 +235,7 @@ class DetailMobilePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                place.description,
+                widget.place.description,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 16.0,
@@ -142,7 +247,7 @@ class DetailMobilePage extends StatelessWidget {
               height: 150,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: place.imageUrls.map((url) {
+                children: widget.place.imageUrls.map((url) {
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: ClipRRect(
@@ -151,6 +256,44 @@ class DetailMobilePage extends StatelessWidget {
                     ),
                   );
                 }).toList(),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Komentar"),
+                      TextButton(
+                          onPressed: () {
+                            print(widget.place.id);
+                            showCommentModal(context, widget.place.id);
+                          },
+                          child: Text("Comment"))
+                    ],
+                  ),
+                  Divider(
+                    color: Colors.black,
+                  ),
+                  SingleChildScrollView(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _comments.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: CircleAvatar(),
+                          title: Text(_comments[index]['name']),
+                          subtitle: Text(_comments[index]['comment']),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -261,7 +404,7 @@ class _DetailWebPageState extends State<DetailWebPage> {
                                       ),
                                     ],
                                   ),
-                                  Consumer<ProductData>(
+                                  Consumer<ProductProvider>(
                                     builder: (context, productData, child) =>
                                         IconButton(
                                       icon: Icon(
