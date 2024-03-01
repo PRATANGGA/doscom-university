@@ -1,12 +1,12 @@
 import 'dart:math';
 
+import 'package:dico1/fonts/fontstyle.dart';
 import 'package:dico1/provider/product_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dico1/model/tourism_place.dart';
 import 'package:provider/provider.dart';
-
-var informationTextStyle = const TextStyle(fontFamily: 'Oxygen');
+import 'package:intl/intl.dart';
 
 class DetailScreen extends StatelessWidget {
   final TourismPlace place;
@@ -30,7 +30,7 @@ class DetailScreen extends StatelessWidget {
 class DetailMobilePage extends StatefulWidget {
   final TourismPlace place;
 
-  DetailMobilePage({Key? key, required this.place}) : super(key: key);
+  const DetailMobilePage({Key? key, required this.place}) : super(key: key);
 
   @override
   State<DetailMobilePage> createState() => _DetailMobilePageState();
@@ -57,66 +57,73 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
             Provider.of<ProductProvider>(context, listen: false).allComment;
       });
     } catch (error) {
-      print("Error fetching comments: $error");
+      debugPrint("Error fetching comments: $error");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     void showCommentModal(BuildContext context, int id) {
+      final TextEditingController usernameController = TextEditingController();
       final TextEditingController commentController = TextEditingController();
       showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            padding: EdgeInsets.only(top: 10.0),
-            // Add return statement here
-            height: MediaQuery.of(context).size.height / 0.85,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
-                Center(
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(right: 5, left: 5),
-                        width: MediaQuery.of(context).size.width - 50,
-                        // width: 100,
-                        height: 60,
-                        child: TextFormField(
-                          controller: commentController,
-                          scrollPadding: EdgeInsets.symmetric(vertical: 20),
-                          decoration: InputDecoration(
-                            hintText: "Enter your comment",
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(25.0),
+            ),
+          ),
+          backgroundColor: Colors.white,
+          context: context,
+          isScrollControlled: true,
+          builder: (context) => Padding(
+                padding: EdgeInsets.only(
+                    top: 20,
+                    right: 20,
+                    left: 20,
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 10.0),
+                    TextField(
+                      decoration: InputDecoration(
+                          hintText: 'enter username',
+                          hintStyle: informationTextStyle),
+                      autofocus: true,
+                      controller: usernameController,
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      decoration: InputDecoration(
+                          hintText: 'What is your feedback?',
+                          hintStyle: informationTextStyle),
+                      autofocus: true,
+                      controller: commentController,
+                    ),
+                    const SizedBox(height: 10.0),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue),
+                        onPressed: () {
+                          Provider.of<ProductProvider>(context, listen: false)
+                              .addComment(id, usernameController.text,
+                                  commentController.text);
+                          Navigator.pop(context);
+                          fetchComments();
+                        },
+                        child: Text(
+                          "Send",
+                          style: detailTextStyle(
+                              Colors.white, FontWeight.bold, 15.0),
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          String randomName = 'User${Random().nextInt(100)}';
-                          Provider.of<ProductProvider>(context, listen: false)
-                              .addComment(
-                                  id, randomName, commentController.text);
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(Icons.send),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
-      );
+              ));
     }
 
     return Scaffold(
@@ -240,46 +247,97 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
                 }).toList(),
               ),
             ),
-            SizedBox(
-              height: 20,
+            const SizedBox(
+              height: 30,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Komentar"),
-                      TextButton(
+            Container(
+              padding: EdgeInsets.only(right: 10, left: 10),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Komentar",
+                          style: detailTextStyle(
+                              Colors.black, FontWeight.bold, 20),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 3,
+                          ),
                           onPressed: () {
                             print(widget.place.id);
                             showCommentModal(context, widget.place.id);
                           },
-                          child: Text("Comment"))
-                    ],
-                  ),
-                  Divider(
-                    color: Colors.black,
-                  ),
-                  (isLoading)
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : Container(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: _comments.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                leading: CircleAvatar(),
-                                title: Text(_comments[index]['name']),
-                                subtitle: Text(_comments[index]['comment']),
-                              );
-                            },
+                          child: Text(
+                            " Comment",
+                            style: detailTextStyle(
+                                Colors.white, FontWeight.w700, 15.0),
                           ),
                         ),
-                ],
+                      ],
+                    ),
+                    const Divider(),
+                    (isLoading)
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: _comments.map(
+                                (comment) {
+                                  DateTime createdAt =
+                                      DateTime.parse(comment['created_at']);
+                                  String formattedCreatedAt =
+                                      DateFormat('yyyy-MM-dd HH:mm')
+                                          .format(createdAt);
+
+                                  return Column(
+                                    children: [
+                                      ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: Colors.primaries[
+                                              Random().nextInt(
+                                                  Colors.primaries.length)],
+                                        ),
+                                        title: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              comment['name'],
+                                              style: informationTextStyle,
+                                            ),
+                                            Text(
+                                              '${formattedCreatedAt}',
+                                              style: const TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        subtitle: Text(comment['comment']),
+                                      ),
+                                      Divider()
+                                    ],
+                                  );
+                                },
+                              ).toList(),
+                            ),
+                          ),
+                  ],
+                ),
               ),
             ),
           ],
