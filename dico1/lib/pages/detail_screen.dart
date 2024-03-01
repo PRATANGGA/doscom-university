@@ -37,25 +37,15 @@ class DetailMobilePage extends StatefulWidget {
 }
 
 class _DetailMobilePageState extends State<DetailMobilePage> {
+  bool isInit = true;
+  bool isLoading = false;
+
   List _comments = [];
 
   @override
   void initState() {
     super.initState();
     fetchComments();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-    updateComments();
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
   }
 
   void fetchComments() async {
@@ -71,64 +61,39 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
     }
   }
 
-  void updateComments() {
-    setState(() {
-      _comments =
-          Provider.of<ProductProvider>(context, listen: false).allComment;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final TextEditingController comment = TextEditingController();
-
     void showCommentModal(BuildContext context, int id) {
       showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
+          final TextEditingController commentController =
+              TextEditingController();
           return Container(
-            padding: EdgeInsets.only(top: 10.0),
-            // Add return statement here
-            height: MediaQuery.of(context).size.height / 0.85,
-            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.all(20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Center(
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(right: 5, left: 5),
-                        width: MediaQuery.of(context).size.width - 50,
-                        // width: 100,
-                        height: 60,
-                        child: TextFormField(
-                          controller: comment,
-                          scrollPadding: EdgeInsets.symmetric(vertical: 20),
-                          decoration: InputDecoration(
-                            hintText: "Enter your comment",
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          String randomName = 'User${Random().nextInt(100)}';
-                          Provider.of<ProductProvider>(context, listen: false)
-                              .addComment(id, randomName, comment.text);
-                          updateComments();
-                          Navigator.pop(context);
-                        },
-                        icon: Icon(Icons.send),
-                      )
-                    ],
+                TextField(
+                  controller: commentController,
+                  decoration: InputDecoration(
+                    hintText: 'Enter your comment',
                   ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    String randomName = 'User${Random().nextInt(100)}';
+                    Provider.of<ProductProvider>(context, listen: false)
+                        .addComment(id, randomName, commentController.text);
+                    Navigator.pop(context); // Close the bottom sheet
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Comment added successfully'),
+                      ),
+                    );
+                  },
+                  child: Text('Submit'),
                 ),
               ],
             ),
@@ -280,19 +245,23 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
                   Divider(
                     color: Colors.black,
                   ),
-                  SingleChildScrollView(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _comments.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: CircleAvatar(),
-                          title: Text(_comments[index]['name']),
-                          subtitle: Text(_comments[index]['comment']),
-                        );
-                      },
-                    ),
-                  ),
+                  (isLoading)
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Container(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _comments.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                leading: CircleAvatar(),
+                                title: Text(_comments[index]['name']),
+                                subtitle: Text(_comments[index]['comment']),
+                              );
+                            },
+                          ),
+                        ),
                 ],
               ),
             ),

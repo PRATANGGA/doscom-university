@@ -48,7 +48,6 @@ class ProductProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         print("Komentar berhasil ditambahkan: ${response.body}");
       } else {
-        // Gagal menambahkan komentar
         print(
             "Gagal menambahkan komentar. Status code: ${response.statusCode}");
       }
