@@ -64,36 +64,53 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
   @override
   Widget build(BuildContext context) {
     void showCommentModal(BuildContext context, int id) {
+      final TextEditingController commentController = TextEditingController();
       showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          final TextEditingController commentController =
-              TextEditingController();
           return Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.only(top: 10.0),
+            // Add return statement here
+            height: MediaQuery.of(context).size.height / 0.85,
+            width: MediaQuery.of(context).size.width,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(
-                  controller: commentController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter your comment',
-                  ),
-                ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    String randomName = 'User${Random().nextInt(100)}';
-                    Provider.of<ProductProvider>(context, listen: false)
-                        .addComment(id, randomName, commentController.text);
-                    Navigator.pop(context); // Close the bottom sheet
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Comment added successfully'),
+                Center(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(right: 5, left: 5),
+                        width: MediaQuery.of(context).size.width - 50,
+                        // width: 100,
+                        height: 60,
+                        child: TextFormField(
+                          controller: commentController,
+                          scrollPadding: EdgeInsets.symmetric(vertical: 20),
+                          decoration: InputDecoration(
+                            hintText: "Enter your comment",
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xffE5E4E3)),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
                       ),
-                    );
-                  },
-                  child: Text('Submit'),
+                      IconButton(
+                        onPressed: () {
+                          String randomName = 'User${Random().nextInt(100)}';
+                          Provider.of<ProductProvider>(context, listen: false)
+                              .addComment(
+                                  id, randomName, commentController.text);
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.send),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
