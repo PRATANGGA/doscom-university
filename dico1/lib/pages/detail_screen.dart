@@ -88,7 +88,7 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
                     const SizedBox(height: 10.0),
                     TextField(
                       decoration: InputDecoration(
-                          hintText: 'enter username',
+                          hintText: 'Masukan Nama',
                           hintStyle: informationTextStyle),
                       autofocus: true,
                       controller: usernameController,
@@ -96,7 +96,7 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
                     const SizedBox(height: 10),
                     TextField(
                       decoration: InputDecoration(
-                          hintText: 'What is your feedback?',
+                          hintText: 'Berikan Komentar',
                           hintStyle: informationTextStyle),
                       autofocus: true,
                       controller: commentController,
@@ -278,7 +278,7 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
                             showCommentModal(context, widget.place.id);
                           },
                           child: Text(
-                            " Comment",
+                            "Komen",
                             style: detailTextStyle(
                                 Colors.white, FontWeight.w700, 15.0),
                           ),
@@ -290,50 +290,53 @@ class _DetailMobilePageState extends State<DetailMobilePage> {
                         ? const Center(
                             child: CircularProgressIndicator(),
                           )
-                        : SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: _comments.map(
-                                (comment) {
-                                  DateTime createdAt =
-                                      DateTime.parse(comment['created_at']);
-                                  String formattedCreatedAt =
-                                      DateFormat('yyyy-MM-dd HH:mm')
-                                          .format(createdAt);
+                        : Container(
+                            height: 400,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: _comments.map(
+                                  (comment) {
+                                    DateTime createdAt =
+                                        DateTime.parse(comment['created_at']);
+                                    String formattedCreatedAt =
+                                        DateFormat('yyyy-MM-dd HH:mm')
+                                            .format(createdAt);
 
-                                  return Column(
-                                    children: [
-                                      ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundColor: Colors.primaries[
-                                              Random().nextInt(
-                                                  Colors.primaries.length)],
-                                        ),
-                                        title: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              comment['name'],
-                                              style: informationTextStyle,
-                                            ),
-                                            Text(
-                                              '${formattedCreatedAt}',
-                                              style: const TextStyle(
-                                                fontStyle: FontStyle.italic,
-                                                fontSize: 10,
+                                    return Column(
+                                      children: [
+                                        ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: Colors.primaries[
+                                                Random().nextInt(
+                                                    Colors.primaries.length)],
+                                          ),
+                                          title: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                comment['name'],
+                                                style: informationTextStyle,
                                               ),
-                                            ),
-                                          ],
+                                              Text(
+                                                '${formattedCreatedAt}',
+                                                style: const TextStyle(
+                                                  fontStyle: FontStyle.italic,
+                                                  fontSize: 10,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          subtitle: Text(comment['comment']),
                                         ),
-                                        subtitle: Text(comment['comment']),
-                                      ),
-                                      Divider()
-                                    ],
-                                  );
-                                },
-                              ).toList(),
+                                        Divider()
+                                      ],
+                                    );
+                                  },
+                                ).toList(),
+                              ),
                             ),
                           ),
                   ],

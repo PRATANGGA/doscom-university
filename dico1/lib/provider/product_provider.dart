@@ -45,7 +45,7 @@ class ProductProvider with ChangeNotifier {
           {"name": name, "comment": comment},
         ),
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print("Komentar berhasil ditambahkan: ${response.body}");
       } else {
         print(
